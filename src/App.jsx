@@ -4,14 +4,7 @@ import * as Papa from "papaparse";
 const CYAN = "#21d6f1";
 const CYAN_DARK = "#0ab8d4";
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CONFIGURAÇÃO — troque pelo ID da sua planilha
-// Como achar o ID: é a parte longa da URL da sua planilha
-// Ex: docs.google.com/spreadsheets/d/ >>> ESTE_TRECHO_AQUI <<< /edit
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const SHEET_ID = "10nlnEVl2xObGw7V7dB_pQrDawCkvCMYAe5yJyXy48ww";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRQVeVOJMXznMHAux74HU0L_unfJCCrSUpyd-8PGAcwawMorq8mZ0Q-sQpR_BBufRskeri-0f5K-R_1/pub?output=csv";
 // Colunas esperadas na planilha (linha 1 = cabeçalho):
 // titulo | descricao | categoria | ferramenta | nivel | free | prompt
 
