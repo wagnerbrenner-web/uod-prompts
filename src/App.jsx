@@ -148,11 +148,10 @@ export default function App() {
   const [ferrFilter, setFerrFilter] = useState("Todos");
 
   useEffect(() => {
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(SHEET_URL)}`;
-    fetch(proxy)
-      .then(r => r.json())
-      .then(data => {
-        const result = Papa.parse(data.contents, { header: true, skipEmptyLines: true });
+const proxy = "https://corsproxy.io/?" + encodeURIComponent(SHEET_URL);    fetch(proxy)
+      .then(r => r.text())
+      .then(csv => {
+        const result = Papa.parse(csv, { header: true, skipEmptyLines: true });
         setPrompts(result.data);
         setLoading(false);
       })
