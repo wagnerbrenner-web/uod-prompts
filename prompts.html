@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompts — Update or Die</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f7f7f7; }
+
+.header { background: #fff; border-bottom: 1px solid #ebebeb; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.logo { font-weight: 900; font-size: 17px; color: #111; }
+.logo span { color: #21d6f1; }
+.logo small { color: #bbb; font-weight: 400; font-size: 13px; margin-left: 8px; }
+.btn-assinar { background: #21d6f1; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; }
+
+.container { max-width: 820px; margin: 0 auto; padding: 36px 20px; }
+
+.hero { background: #fff; border-radius: 14px; padding: 36px 32px; margin-bottom: 28px; border: 1px solid #ebebeb; }
+.hero-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #0ab8d4; text-transform: uppercase; margin-bottom: 10px; }
+.hero h1 { font-size: 30px; font-weight: 900; color: #111; line-height: 1.25; margin-bottom: 10px; }
+.hero h1 span { color: #21d6f1; }
+.hero p { color: #888; font-size: 15px; line-height: 1.65; max-width: 500px; }
+
+.search-bar { width: 100%; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 16px; color: #111; font-size: 14px; outline: none; margin-bottom: 16px; font-family: inherit; transition: border-color 0.2s; }
+.search-bar:focus { border-color: #21d6f1; }
+
+.filters { margin-bottom: 8px; }
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.pill { background: #fff; color: #777; border: 1px solid #e0e0e0; border-radius: 20px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.pill.active { background: #21d6f1; color: #fff; border-color: #21d6f1; font-weight: 700; }
+
+.count { color: #bbb; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin: 16px 0 20px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+
+.card { background: #fff; border: 1px solid #ebebeb; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.18s; position: relative; }
+.card:hover { border-color: #21d6f188; box-shadow: 0 4px 20px rgba(33,214,241,0.12); transform: translateY(-2px); }
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.tag { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 4px; padding: 2px 8px; white-space: nowrap; }
+.tag-tool { font-size: 11px; font-weight: 500; color: #999; border: 1px solid #e5e5e5; border-radius: 4px; padding: 2px 8px; background: #f9f9f9; }
+.card h3 { color: #111; font-size: 15px; font-weight: 700; line-height: 1.45; margin-bottom: 8px; }
+.card p { color: #999; font-size: 13px; line-height: 1.6; }
+.card-cta { margin-top: 16px; font-size: 12px; font-weight: 700; color: #0ab8d4; }
+.card-cta.locked { color: #ccc; }
+.badge-premium { position: absolute; top: 14px; right: 14px; font-size: 11px; background: #f5f5f5; color: #bbb; border-radius: 4px; padding: 3px 8px; }
+
+.empty { text-align: center; color: #ccc; padding: 60px 0; font-size: 14px; }
+
+/* DETAIL VIEW */
+.detail { max-width: 680px; margin: 0 auto; padding: 0 20px 80px; display: none; }
+.detail.active { display: block; }
+.btn-back { background: none; border: none; color: #aaa; cursor: pointer; font-size: 13px; padding: 28px 0 24px; font-family: inherit; display: block; }
+.detail h1 { font-size: 26px; font-weight: 800; color: #111; line-height: 1.3; margin-bottom: 12px; }
+.detail .desc { color: #777; font-size: 15px; line-height: 1.7; margin-bottom: 32px; }
+.prompt-box { background: #d8f9fe; border-radius: 10px; padding: 28px 32px; margin-bottom: 20px; border: 1px solid #b8f0fc; }
+.prompt-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #0ab8d4; text-transform: uppercase; margin-bottom: 16px; }
+.prompt-text { font-family: Courier, monospace; font-size: 14px; line-height: 1.9; color: #111; white-space: pre-wrap; word-break: break-word; }
+.btn-copy { background: #21d6f1; color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.btn-copy.copied { background: #e8fafe; color: #0ab8d4; border: 1px solid #21d6f1; }
+
+/* PAYWALL */
+.paywall { background: #f9fffe; border: 2px solid #21d6f144; border-radius: 14px; padding: 40px 28px; text-align: center; margin-top: 28px; }
+.paywall h2 { color: #111; font-weight: 800; font-size: 20px; margin-bottom: 8px; }
+.paywall p { color: #999; font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+.btn-assinar-big { background: #21d6f1; color: #fff; border: none; border-radius: 8px; padding: 13px 32px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+
+#list-view { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Update<span>!</span><small>Prompts</small></div>
+  <button class="btn-assinar">Assinar — R$29/mês</button>
+</div>
+
+<div id="list-view">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-label">Update or Die · Repositório</div>
+      <h1>Prompts para usar hoje.<br><span>Não amanhã. Agora.</span></h1>
+      <p>Repositório curado com prompts do dia a dia. Nada teórico. Tudo testado.</p>
+    </div>
+    <input class="search-bar" type="text" id="search" placeholder="Buscar prompt..." oninput="render()">
+    <div class="filters">
+      <div class="filter-row" id="cat-filters"></div>
+      <div class="filter-row" id="ferr-filters"></div>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">Nenhum prompt encontrado.</div>
+  </div>
+</div>
+
+<div id="detail-view" style="display:none">
+  <div class="container">
+    <button class="btn-back" onclick="showList()">← voltar para prompts</button>
+    <div class="card-tags" id="detail-tags"></div>
+    <h1 id="detail-title"></h1>
+    <p class="desc" id="detail-desc"></p>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ADICIONE SEUS PROMPTS AQUI
+// free: true = gratuito, false = premium (mostra paywall)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const prompts = [
+  {
+    titulo: "Responder e-mail difícil sem parecer agressivo",
+    descricao: "Quando você recebeu um e-mail que te irritou e precisa responder de forma profissional.",
+    categoria: "Email",
+    ferramenta: "Qualquer",
+    free: true,
+    prompt: `Preciso responder o e-mail abaixo de forma profissional e direta, sem soar agressivo ou passivo-agressivo. Mantenha o tom firme mas construtivo. Não invente informações. Use o mesmo idioma do e-mail recebido.
+
+E-mail recebido:
+[cole o e-mail aqui]
+
+Meu ponto de vista sobre a situação:
+[explique brevemente o que aconteceu e o que você quer comunicar]`
+  },
+  {
+    titulo: "Resumir reunião em 3 decisões e próximos passos",
+    descricao: "Para quando você sai de uma reunião com a cabeça cheia e precisa registrar o que importa.",
+    categoria: "Reunião",
+    ferramenta: "Qualquer",
+    free: true,
+    prompt: `Transforme as notas abaixo em um resumo de reunião com exatamente este formato:
+
+**3 decisões tomadas:**
+1.
+2.
+3.
+
+**Próximos passos:**
+- [nome responsável] → [ação] → [prazo]
+
+**Ficou em aberto:**
+- [lista do que não foi resolvido]
+
+Notas da reunião:
+[cole aqui]`
+  },
+  {
+    titulo: "Briefing criativo de 1 página a partir de um papo informal",
+    descricao: "Você conversou com o cliente, tem anotações bagunçadas. Vira briefing em minutos.",
+    categoria: "Briefing",
+    ferramenta: "Claude",
+    free: true,
+    prompt: `Transforme as notas abaixo em um briefing criativo objetivo, com no máximo 1 página. Use este formato:
+
+**Projeto:** [nome]
+**Problema real:** [o que o cliente quer resolver, não o que pediu]
+**Público:** [quem vai receber a comunicação]
+**Tom:** [como deve soar]
+**Entregável:** [o que precisa sair]
+**Restrições:** [o que não pode, o que já foi tentado]
+**Sucesso parece com:** [como saberemos que funcionou]
+
+Notas do papo:
+[cole aqui]`
+  },
+  {
+    titulo: "Reescrever texto corporativo em linguagem humana",
+    descricao: "Aquele texto cheio de 'alavancar sinergias' que chegou para você editar.",
+    categoria: "Copywriting",
+    ferramenta: "Qualquer",
+    free: false,
+    prompt: ""
+  },
+  {
+    titulo: "Preparar perguntas para entrevista com fonte ou cliente",
+    descricao: "Você tem 30 minutos com alguém importante. Prepare perguntas que abrem conversa.",
+    categoria: "Pesquisa",
+    ferramenta: "Qualquer",
+    free: false,
+    prompt: ""
+  },
+  {
+    titulo: "Montar argumento para convencer um chefe conservador",
+    descricao: "Você tem uma ideia boa. Seu chefe é cético. Precisa de um argumento, não de uma briga.",
+    categoria: "Apresentação",
+    ferramenta: "Claude",
+    free: false,
+    prompt: ""
+  }
+];
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NÃO MEXA ABAIXO DESTA LINHA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const catColors = {
+  Email: "#0ab8d4", Reunião: "#7c5cbf", Briefing: "#e07b2a",
+  Copywriting: "#2a9e6b", Pesquisa: "#d44a6f", Apresentação: "#3a7bd5"
+};
+
+const categorias = ["Todos", "Email", "Reunião", "Briefing", "Copywriting", "Pesquisa", "Apresentação"];
+const ferramentas = ["Todos", "Qualquer", "Claude", "ChatGPT", "Gemini"];
+
+let catAtiva = "Todos";
+let ferrAtiva = "Todos";
+
+function tagHTML(label) {
+  const color = catColors[label] || "#888";
+  return `<span class="tag" style="color:${color};border:1px solid ${color}44;background:${color}11">${label}</span>`;
+}
+
+function toolHTML(label) {
+  return `<span class="tag-tool">${label}</span>`;
+}
+
+function buildFilters() {
+  document.getElementById("cat-filters").innerHTML = categorias.map(c =>
+    `<button class="pill ${c === catAtiva ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
+  ).join("");
+  document.getElementById("ferr-filters").innerHTML = ferramentas.map(f =>
+    `<button class="pill ${f === ferrAtiva ? 'active' : ''}" onclick="setFerr('${f}')">${f}</button>`
+  ).join("");
+}
+
+function setCat(c) { catAtiva = c; render(); }
+function setFerr(f) { ferrAtiva = f; render(); }
+
+function render() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const filtered = prompts.filter((p, i) => {
+    const matchSearch = p.titulo.toLowerCase().includes(search) || p.descricao.toLowerCase().includes(search);
+    const matchCat = catAtiva === "Todos" || p.categoria === catAtiva;
+    const matchFerr = ferrAtiva === "Todos" || p.ferramenta === ferrAtiva;
+    return matchSearch && matchCat && matchFerr;
+  });
+
+  buildFilters();
+  document.getElementById("count").textContent = filtered.length + " prompts encontrados";
+
+  const grid = document.getElementById("grid");
+  const originalIndexes = prompts.map((p, i) => ({ p, i })).filter(({ p }) => {
+    const matchSearch = p.titulo.toLowerCase().includes(search) || p.descricao.toLowerCase().includes(search);
+    const matchCat = catAtiva === "Todos" || p.categoria === catAtiva;
+    const matchFerr = ferrAtiva === "Todos" || p.ferramenta === ferrAtiva;
+    return matchSearch && matchCat && matchFerr;
+  });
+
+  if (originalIndexes.length === 0) {
+    grid.innerHTML = "";
+    document.getElementById("empty").style.display = "block";
+  } else {
+    document.getElementById("empty").style.display = "none";
+    grid.innerHTML = originalIndexes.map(({ p, i }) => `
+      <div class="card" onclick="showDetail(${i})">
+        ${!p.free ? '<div class="badge-premium">premium</div>' : ''}
+        <div class="card-tags">${tagHTML(p.categoria)}${toolHTML(p.ferramenta)}</div>
+        <h3>${p.titulo}</h3>
+        <p>${p.descricao}</p>
+        <div class="card-cta ${p.free ? '' : 'locked'}">${p.free ? 'Ver prompt →' : 'Desbloquear →'}</div>
+      </div>
+    `).join("");
+  }
+}
+
+function showDetail(i) {
+  const p = prompts[i];
+  document.getElementById("list-view").style.display = "none";
+  document.getElementById("detail-view").style.display = "block";
+  document.getElementById("detail-tags").innerHTML = tagHTML(p.categoria) + toolHTML(p.ferramenta);
+  document.getElementById("detail-title").textContent = p.titulo;
+  document.getElementById("detail-desc").textContent = p.descricao;
+
+  if (p.free) {
+    document.getElementById("detail-content").innerHTML = `
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt</div>
+        <div class="prompt-text">${p.prompt.replace(/</g, "&lt;")}</div>
+      </div>
+      <button class="btn-copy" onclick="copyPrompt(this, ${i})">Copiar prompt</button>
+    `;
+  } else {
+    document.getElementById("detail-content").innerHTML = `
+      <div class="paywall">
+        <h2>Prompt exclusivo para assinantes</h2>
+        <p>Acesse o repositório completo por <strong>R$29/mês</strong></p>
+        <button class="btn-assinar-big">Assinar agora</button>
+      </div>
+    `;
+  }
+  window.scrollTo(0, 0);
+}
+
+function showList() {
+  document.getElementById("detail-view").style.display = "none";
+  document.getElementById("list-view").style.display = "block";
+}
+
+function copyPrompt(btn, i) {
+  navigator.clipboard.writeText(prompts[i].prompt);
+  btn.textContent = "✓ Copiado!";
+  btn.classList.add("copied");
+  setTimeout(() => { btn.textContent = "Copiar prompt"; btn.classList.remove("copied"); }, 2000);
+}
+
+render();
+</script>
+</body>
+</html>
